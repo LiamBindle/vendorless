@@ -3,8 +3,10 @@ import inspect
 
 from dataclasses import dataclass
 
-class parameter_base:
+
+class parameter_base:  # pylint: disable=invalid-name
     pass
+
 
 @dataclass
 class reference:
@@ -14,7 +16,8 @@ class reference:
     def dereference(self):
         return self.param.__get__(self.obj, self.obj.__class__)
 
-class parameter(parameter_base):
+
+class parameter(parameter_base):  # pylint: disable=invalid-name
     def __init__(self, name):
         self.attr_name = f"_{name}"
 
@@ -43,7 +46,7 @@ class parameter(parameter_base):
     def __repr__(self) -> str:
         return f"<parameter {self.attr_name}>"
 
-class computed_parameter(parameter_base):
+class computed_parameter(parameter_base): # pylint: disable=invalid-name
     def __init__(self, func):
         self.func = func
         self.attr_name = f"_{func.__name__}"
@@ -85,7 +88,7 @@ def service(cls):
     #   - attributes become parameters
 
     annotations = cls.__annotations__
-    
+
     for name in annotations:
         setattr(cls, name, parameter(name))
 
@@ -94,25 +97,25 @@ def service(cls):
         unexpected_args = set(kwargs.keys()) - set(annotations)
         if unexpected_args:
             raise ArgumentError(f"Unexpected argument: {", ".join(unexpected_args)}")
-        
+
         for name in annotations:
             if name in kwargs:
                 setattr(self, name, kwargs[name])
-            
+
 
     cls.__init__ = __init__
     return cls
 
-@service
-class foo:
-    a: str
-    b: str
-
-    @computed_parameter
-    def c(self, a, b):
-        return f"{a}-{b}"
-
 if __name__ == '__main__':
+    @service
+    class foo:
+        a: str
+        b: str
+
+        @computed_parameter
+        def c(self, a, b):
+            return f"{a}-{b}"
+        
     x = foo(a=1, b=2)
     y = foo()
     print(x.c)
