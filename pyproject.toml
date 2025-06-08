@@ -1,0 +1,28 @@
+[project]
+name = "vendorless"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Liam Bindle",email = "liambindle@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "jinja2",
+    "click",
+    "pyyaml"
+]
+packages = [{ include = "your_package", from = "src" }]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+weather = "vendorless.cli:hello"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.0"
+
