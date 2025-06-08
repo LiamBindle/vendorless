@@ -1,0 +1,25 @@
+[project]
+name = "{{ cookiecutter.name }}"
+version = "{{ cookiecutter.version }}"
+description = "{{ cookiecutter.description }}"
+authors = [
+    {name = "{{ cookiecutter.author }}", email = "{{ cookiecutter.email }}"}
+]
+license = {text = "{{ cookiecutter.license }}"}
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+]
+
+packages = [
+    { include = "{{ cookiecutter.name }}", from = "src" },
+]
+
+include = [
+    { path = "{{ cookiecutter.name }}/templates", format = "package" }
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

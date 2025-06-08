@@ -11,18 +11,23 @@ requires-python = ">=3.12"
 dependencies = [
     "jinja2",
     "click",
-    "pyyaml"
+    "pyyaml",
+    "cookiecutter (>=2.6.0,<3.0.0)"
 ]
-packages = [{ include = "your_package", from = "src" }]
+packages = [
+    { include = "vendorless", from = "src" },
+]
 
+include = [
+    { path = "vendorless/templates", format = "package" }
+]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-weather = "vendorless.cli:hello"
+vl = "vendorless.cli:cli"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
-
