@@ -3,6 +3,8 @@ import inspect
 
 from dataclasses import dataclass
 
+# from out.core.param import objects
+
 
 class _DEFERRED:
     def __repr__(self) -> str:
@@ -91,49 +93,52 @@ class computed_parameter(parameter_base): # pylint: disable=invalid-name
         # return getattr(instance, self.attr_name)
 
 
-_stack_objects: dict[str, list] = {}
+# import attrs
 
+# @attrs.define
+# class MyClass:
+#     value = attrs.field(converter=parameter)
 
-def stack_object(type: str):
+_blueprints: list = []
 
-    def parameterized(cls):
-
-        # Collect annotated fields and their defaults (if any)
-        parameters = []
-
-        for name, type_hint in cls.__annotations__.items():
-            default = getattr(cls, name, DEFERRED)
-            parameters.append(
-                inspect.Parameter(
-                    name,
-                    kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                    default=default,
-                    annotation=type_hint,
-                )
-            )
-
-            setattr(cls, name, parameter(name))
-
-        sig = inspect.Signature(parameters)
-
-        # Generate the __init__ method
-        def __init__(self, *args, **kwargs):
-            bound = sig.bind(*args, **kwargs)
-            bound.apply_defaults()
-
-            for name, value in bound.arguments.items():
-                if value is not DEFERRED:
-                    setattr(self, name, value)
-                    
-            if type not in _stack_objects:
-                _stack_objects[type] = []
-            _stack_objects[type].append(self)
         
-        cls.__init__ = __init__
-        return cls
-    return parameterized
+
+def blueprint(cls):
+
+    # Collect annotated fields and their defaults (if any)
+    parameters = []
+
+    for name, type_hint in cls.__annotations__.items():
+        default = getattr(cls, name, DEFERRED)
+        parameters.append(
+            inspect.Parameter(
+                name,
+                kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                default=default,
+                annotation=type_hint,
+            )
+        )
+
+        setattr(cls, name, parameter(name))
+
+    sig = inspect.Signature(parameters)
+
+    # Generate the __init__ method
+    def __init__(self, *args, **kwargs):
+        bound = sig.bind(*args, **kwargs)
+        bound.apply_defaults()
+
+        for name, value in bound.arguments.items():
+            if value is not DEFERRED:
+                setattr(self, name, value)
+                
+        _blueprints.append(self)
+    
+    cls.__init__ = __init__
+    return cls
 
 
-service = stack_object('service')
-volume = stack_object('volume')
-network = stack_object('network')
+def render():
+    for blueprint in _blueprints:
+        for template_file in blueprint._template_files():
+            pass
