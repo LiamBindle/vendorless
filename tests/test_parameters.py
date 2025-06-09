@@ -1,4 +1,4 @@
-from vendorless.core.params import parameter, computed_parameter, service, foo, DEFERRED
+from vendorless.core import computed_parameter, service, DEFERRED
 import attr
 
 def test_params():

@@ -4,6 +4,14 @@ import inspect
 from dataclasses import dataclass
 
 
+class _DEFERRED:
+    def __repr__(self) -> str:
+        return 'DEFERRED' 
+    
+from typing import Any
+DEFERRED: Any = _DEFERRED()
+
+
 class parameter_base:  # pylint: disable=invalid-name
     pass
 
@@ -82,14 +90,9 @@ class computed_parameter(parameter_base): # pylint: disable=invalid-name
         #     setattr(instance, self.attr_name, value)
         # return getattr(instance, self.attr_name)
 
-class _DEFERRED:
-    def __repr__(self) -> str:
-        return 'DEFERRED' 
-    
-from typing import Any
-DEFERRED: Any = _DEFERRED()
 
-objects: dict[str, list] = {}
+_stack_objects: dict[str, list] = {}
+
 
 def stack_object(type: str):
 
@@ -122,29 +125,16 @@ def stack_object(type: str):
                 if value is not DEFERRED:
                     setattr(self, name, value)
                     
-            if type not in objects:
-                objects[type] = []
-            objects[type].append(self)
+            if type not in _stack_objects:
+                _stack_objects[type] = []
+            _stack_objects[type].append(self)
         
-        __init__.__signature__ = inspect.Signature([inspect.Parameter('self', inspect.Parameter.POSITIONAL_OR_KEYWORD)] + parameters)
+        # __init__.__signature__ = inspect.Signature([inspect.Parameter('self', inspect.Parameter.POSITIONAL_OR_KEYWORD)] + parameters)
         cls.__init__ = __init__
         return cls
     return parameterized
 
+
 service = stack_object('service')
 volume = stack_object('volume')
 network = stack_object('network')
-import attr
-
-@service
-@attr.s(auto_attribs=True)
-class foo:
-    a: str
-    b: str = 1
-
-    @computed_parameter
-    def c(self, a, b):
-        return f"{a}-{b}"
-
-# x = foo()
-# print("here")
