@@ -1,7 +1,8 @@
 from .parameters import (
-    Parameter,
+    parameter,
     computed_parameter
 )
 from .blueprints import (
     Blueprint,
 )
+from .volume import Volume

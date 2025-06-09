@@ -1,4 +1,4 @@
-from vendorless.core import computed_parameter, Parameter, Blueprint
+from vendorless.core import Blueprint
 
 from dataclasses import dataclass
 
@@ -21,14 +21,22 @@ def test_template_files():
     from vendorless.core.blueprints import _DummyBlueprint
 
     x = _DummyBlueprint()
+    yielded_templates = set(src_dest_pair for src_dest_pair in x._template_list())
+    assert ('volume/docker-compose.yaml', 'volume/docker-compose.yaml') in yielded_templates
+    assert ('module/cookiecutter.json', 'module/cookiecutter.json') in yielded_templates
 
-    yielded_templates = set()
 
-    for path, relative_path in x._template_files():
-        if relative_path is not None:
-            relative_path = str(relative_path)
-        yielded_templates.add((path.name, relative_path))
+def test_render_postgres():
+    from vendorless.core import Volume
+    from vendorless.postgres import PostgresDatabase
+    from pathlib import Path
 
-    assert ('docker-compose.yaml', None) in yielded_templates
-    assert ('cookiecutter.json', 'module/cookiecutter.json') in yielded_templates
-    
+    v = Volume()
+    pg = PostgresDatabase(
+        volume_name=v.name,
+        data_path="/pgdata"
+    )
+    v.name = "pgdata_volume"
+
+    root = Path('.build/')
+    Blueprint.render_stack(root)

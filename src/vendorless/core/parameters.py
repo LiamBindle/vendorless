@@ -15,7 +15,7 @@ class ParameterReference:
 
 UNRESOLVED = object()
 
-class _Parameter:
+class Parameter:
     def __init__(self, default=UNRESOLVED) -> None:
         self.default = default
 
@@ -47,10 +47,8 @@ class _Parameter:
     def __repr__(self) -> str:
         return f"<parameter {self.attr_name}>"
     
-    def __call__(self, default) -> Any:
-        return _Parameter(default)
-
-Parameter: Any = _Parameter()
+def parameter(default=UNRESOLVED) -> Any:
+    return Parameter(default)
 
 class computed_parameter: # pylint: disable=invalid-name
     def __init__(self, func):
