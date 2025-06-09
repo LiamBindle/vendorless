@@ -1,13 +1,18 @@
-from vendorless.core import computed_parameter, service, DEFERRED
+# from vendorless.core import computed_parameter, DEFERRED #service
+# from vendorless.core.core import parameter
+from vendorless.core import computed_parameter, Parameter, Blueprint
+from typing import Any
 import attr
+import attrs
+from dataclasses import dataclass
 
 import pytest
 
 
-@service
-@attr.s(auto_attribs=True)
-class C:
-    p: str = DEFERRED
+@dataclass
+class C(Blueprint):
+    p: str = Parameter
+    d: str = Parameter('foo')
 
     @computed_parameter
     def cp(self, p):
@@ -27,6 +32,11 @@ def test_resolution():
 
     a.p = "2"
     assert b.p == "2"
+
+    # check linkage
+    assert b.d == "foo"
+    a.p = b.d
+    assert a.p == "foo"
 
 def test_circular():
     a = C()
