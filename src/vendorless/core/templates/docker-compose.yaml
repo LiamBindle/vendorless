@@ -1,0 +1,9 @@
+services:
+    {% for module in component.modules %}
+    {% endfor %}
+
+volumes:
+    {% for module in component.modules %}
+    {% for volume in module.volumes %}
+    {% endfor %}
+    {% endfor %}

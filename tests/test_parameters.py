@@ -1,8 +1,8 @@
-from vendorless.param import parameter, computed_parameter, service
+from vendorless.core.param import parameter, computed_parameter, parameterized
 
 def test_params():
 
-    @service
+    @parameterized
     class C:
         p: str
 

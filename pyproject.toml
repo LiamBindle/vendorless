@@ -1,33 +1,42 @@
 [project]
-name = "vendorless"
+name = "vendorless-core"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Liam Bindle",email = "liambindle@gmail.com"}
+    { name = "Liam Bindle", email ="liambindle@gmail.com" }
 ]
-license = {text = "MIT"}
+license = { text = "MIT" }
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
+
 dependencies = [
-    "jinja2",
     "click",
     "pyyaml",
-    "cookiecutter (>=2.6.0,<3.0.0)"
+    "cookiecutter",
+    "jinja2",
+    "vendorless-postgres @ file:///home/liam/projects/vendorless/v2/modules/postgres"
 ]
+
+[tool.poetry]
+
 packages = [
-    { include = "vendorless", from = "src" },
+    { include = "vendorless/core", from = "src" },
 ]
 
 include = [
-    { path = "vendorless/templates", format = "package" }
+    "vendorless/core/templates",
 ]
 
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
-
 [tool.poetry.scripts]
-vl = "vendorless.cli:cli"
+vl = "vendorless.core.cli:cli"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
+
+
+
+[tool.poetry.dependencies]
+vendorless-postgres = {develop = true}
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

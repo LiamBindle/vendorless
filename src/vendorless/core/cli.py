@@ -19,8 +19,7 @@ def new():
 def module():
     """Create a new module."""
     click.echo("Initializing new module.")
-    templates_path = importlib.resources.files('vendorless.templates')
-    print(templates_path)
+    templates_path = importlib.resources.files('vendorless.core.templates')
     cookiecutter(str(templates_path / 'module'))
     click.echo("New module initialized.")
 

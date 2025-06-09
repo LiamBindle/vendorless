@@ -83,7 +83,7 @@ class computed_parameter(parameter_base): # pylint: disable=invalid-name
         # return getattr(instance, self.attr_name)
 
 
-def service(cls):
+def parameterized(cls):
     # inspect all attributes
     #   - attributes become parameters
 
@@ -101,6 +101,15 @@ def service(cls):
         for name in annotations:
             if name in kwargs:
                 setattr(self, name, kwargs[name])
+    
+    # def render(self, context_folder):
+    #     renders all template files in the module to a folder in the build context
+    #     renders service, volume, and network definitions to docker-compose
+    #         do this by rendering service template, parsing yaml, saving to service definition
+    #     all services should be registered; docker-compose services is all of the service definitions
+    
+    #     # template may be resource file, file path
+    #     pass
 
 
     cls.__init__ = __init__

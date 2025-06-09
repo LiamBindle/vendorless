@@ -1,5 +1,5 @@
 [project]
-name = "{{ cookiecutter.name }}"
+name = "vendorless-{{ cookiecutter.name }}"
 version = "{{ cookiecutter.version }}"
 description = "{{ cookiecutter.description }}"
 authors = [
@@ -7,16 +7,16 @@ authors = [
 ]
 license = {text = "{{ cookiecutter.license }}"}
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
 ]
 
+[tool.poetry]
 packages = [
-    { include = "{{ cookiecutter.name }}", from = "src" },
+    { include = "vendorless/{{ cookiecutter.name }}", from = "src" },
 ]
-
 include = [
-    { path = "{{ cookiecutter.name }}/templates", format = "package" }
+    "vendorless/{{ cookiecutter.name }}/templates",
 ]
 
 
