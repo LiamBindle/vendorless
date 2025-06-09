@@ -106,7 +106,7 @@ def stack_object(type: str):
             parameters.append(
                 inspect.Parameter(
                     name,
-                    kind=inspect.Parameter.KEYWORD_ONLY,
+                    kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
                     default=default,
                     annotation=type_hint,
                 )
@@ -117,8 +117,8 @@ def stack_object(type: str):
         sig = inspect.Signature(parameters)
 
         # Generate the __init__ method
-        def __init__(self, **kwargs):
-            bound = sig.bind(**kwargs)
+        def __init__(self, *args, **kwargs):
+            bound = sig.bind(*args, **kwargs)
             bound.apply_defaults()
 
             for name, value in bound.arguments.items():
@@ -129,7 +129,6 @@ def stack_object(type: str):
                 _stack_objects[type] = []
             _stack_objects[type].append(self)
         
-        # __init__.__signature__ = inspect.Signature([inspect.Parameter('self', inspect.Parameter.POSITIONAL_OR_KEYWORD)] + parameters)
         cls.__init__ = __init__
         return cls
     return parameterized
