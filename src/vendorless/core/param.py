@@ -82,49 +82,69 @@ class computed_parameter(parameter_base): # pylint: disable=invalid-name
         #     setattr(instance, self.attr_name, value)
         # return getattr(instance, self.attr_name)
 
+objects: dict[str, list] = {}
 
-def parameterized(cls):
-    # inspect all attributes
-    #   - attributes become parameters
+DEFERRED = object()
 
-    annotations = cls.__annotations__
+def generate_stub(cls):
+    lines = [f"class {cls.__name__}:"]
+    init = getattr(cls, '__init__', None)
+    if init and init is not object.__init__:
+        sig = inspect.signature(init)
+        params = str(sig)
+        lines.append(f"    def __init__{params} -> None: ...")
+    else:
+        lines.append("    def __init__(self) -> None: ...")
 
-    for name in annotations:
-        setattr(cls, name, parameter(name))
+    for name, member in inspect.getmembers(cls):
+        if inspect.isfunction(member) and not name.startswith('_'):
+            sig = inspect.signature(member)
+            lines.append(f"    def {name}{sig} -> typing.Any: ...")
+        elif not name.startswith('_') and not inspect.ismethoddescriptor(member):
+            lines.append(f"    {name}: typing.Any")
 
-    # Generate the __init__ method
-    def __init__(self, **kwargs):
-        unexpected_args = set(kwargs.keys()) - set(annotations)
-        if unexpected_args:
-            raise ArgumentError(f"Unexpected argument: {", ".join(unexpected_args)}")
+    return "\n".join(lines)
 
-        for name in annotations:
-            if name in kwargs:
-                setattr(self, name, kwargs[name])
-    
-    # def render(self, context_folder):
-    #     renders all template files in the module to a folder in the build context
-    #     renders service, volume, and network definitions to docker-compose
-    #         do this by rendering service template, parsing yaml, saving to service definition
-    #     all services should be registered; docker-compose services is all of the service definitions
-    
-    #     # template may be resource file, file path
-    #     pass
+def stack_object(type: str):
 
+    def parameterized(cls):
 
-    cls.__init__ = __init__
-    return cls
+        # Collect annotated fields and their defaults (if any)
+        parameters = []
 
-if __name__ == '__main__':
-    @service
-    class foo:
-        a: str
-        b: str
+        for name, type_hint in cls.__annotations__.items():
+            default = getattr(cls, name, DEFERRED)
+            parameters.append(
+                inspect.Parameter(
+                    name,
+                    kind=inspect.Parameter.KEYWORD_ONLY,
+                    default=default,
+                    annotation=type_hint,
+                )
+            )
 
-        @computed_parameter
-        def c(self, a, b):
-            return f"{a}-{b}"
+            setattr(cls, name, parameter(name))
+
+        sig = inspect.Signature(parameters)
+
+        # Generate the __init__ method
+        def __init__(self, **kwargs):
+            bound = sig.bind(**kwargs)
+            bound.apply_defaults()
+
+            for name, value in bound.arguments.items():
+                if value is not DEFERRED:
+                    setattr(self, name, value)
+                    
+            if type not in objects:
+                objects[type] = []
+            objects[type].append(self)
         
-    x = foo(a=1, b=2)
-    y = foo()
-    print(x.c)
+        __init__.__signature__ = inspect.Signature([inspect.Parameter('self', inspect.Parameter.POSITIONAL_OR_KEYWORD)] + parameters)
+        cls.__init__ = __init__
+        return cls
+    return parameterized
+
+service = stack_object('service')
+volume = stack_object('volume')
+network = stack_object('network')

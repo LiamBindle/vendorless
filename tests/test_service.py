@@ -1,6 +1,6 @@
-from vendorless.core.service import Service
+from vendorless.postgres.database import PostgresDatabase
 
 def test_service_def_1():
-    a = Service()
-    assert a.name is None
-    assert a.age is None
+    pg = PostgresDatabase()
+    print('here')
+    

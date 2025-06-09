@@ -32,6 +32,11 @@ def stack(name):
 @click.command()
 def render():
     """Render the project."""
+
+    # pass python file name
+    # run file
+    # all constructed services, volumes, and networks will be rendered
+
     click.echo("Project rendered.")
 
 cli.add_command(new)
