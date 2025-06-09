@@ -14,7 +14,8 @@ dependencies = [
     "pyyaml",
     "cookiecutter",
     "jinja2",
-    "vendorless-postgres @ file:///home/liam/projects/vendorless/v2/modules/postgres"
+    "vendorless-postgres @ file:///home/liam/projects/vendorless/v2/modules/postgres",
+    "attrs (>=25.3.0,<26.0.0)"
 ]
 
 [tool.poetry]
@@ -34,9 +35,9 @@ vl = "vendorless.core.cli:cli"
 pytest = "^8.4.0"
 
 
-
 [tool.poetry.dependencies]
 vendorless-postgres = {develop = true}
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

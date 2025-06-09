@@ -1,10 +1,12 @@
-from vendorless.core.param import parameter, computed_parameter, parameterized
+from vendorless.core.params import parameter, computed_parameter, service, foo, DEFERRED
+import attr
 
 def test_params():
 
-    @parameterized
+    @service
+    @attr.s(auto_attribs=True)
     class C:
-        p: str
+        p: str = DEFERRED
 
         @computed_parameter
         def cp(self, p):
