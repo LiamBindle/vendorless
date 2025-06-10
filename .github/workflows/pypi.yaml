@@ -1,9 +1,9 @@
-name: Run pytest
+name: Deploy PyPI
 
 on:
   push:
-    branches:
-      - main  # or your deployment branch
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: write  # required for GitHub Pages
@@ -29,10 +29,10 @@ jobs:
         run: |
           poetry config virtualenvs.create false
 
-      - name: Install dependencies
+      - name: Install dependencies and build
         run: |
-          poetry install --no-interaction --with=dev
+          poetry install --no-dev
+          poetry build
 
-      - name: Run pytest
-        run: |
-          poetry run pytest
+      - name: Publish package to PyPI
+        run: poetry publish --no-interaction --username __token__ --password ${{ secrets.PYPI_API_TOKEN }}
