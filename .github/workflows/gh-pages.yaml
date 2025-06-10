@@ -9,7 +9,7 @@ permissions:
   contents: write  # required for GitHub Pages
 
 jobs:
-  deploy:
+  Deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,9 +25,9 @@ jobs:
         run: |
           pip install poetry
 
-      - name: Configure Poetry
-        run: |
-          poetry config virtualenvs.create false
+      # - name: Configure Poetry
+      #   run: |
+      #     poetry config virtualenvs.create false
 
       - name: Install dependencies
         run: |
