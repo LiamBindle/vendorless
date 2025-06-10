@@ -1,0 +1,38 @@
+name: Run pytest
+
+on:
+  push:
+    branches:
+      - main  # or your deployment branch
+
+permissions:
+  contents: write  # required for GitHub Pages
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: |
+          pip install poetry
+
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.create false
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction --with=dev
+
+      - name: Run pytest
+        run: |
+          poetry run pytest
