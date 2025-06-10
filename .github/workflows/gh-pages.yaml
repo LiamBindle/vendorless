@@ -25,13 +25,13 @@ jobs:
         run: |
           pip install poetry
 
-      # - name: Configure Poetry
-      #   run: |
-      #     poetry config virtualenvs.create false
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.create false
 
       - name: Install dependencies
         run: |
-          poetry install --no-interaction --no-root
+          poetry install --no-interaction
 
       - name: Build MkDocs
         run: |
