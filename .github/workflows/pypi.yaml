@@ -31,7 +31,7 @@ jobs:
 
       - name: Install dependencies and build
         run: |
-          poetry install --no-dev
+          poetry install
           poetry build
 
       - name: Publish package to PyPI
