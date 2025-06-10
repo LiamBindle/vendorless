@@ -1,46 +1,32 @@
+import importlib
+import pkgutil
 import click
-from cookiecutter.main import cookiecutter
-import importlib.resources
 
 
-# vl (verb) (noun)
+import pkgutil
+import sys
 
-@click.group()
-def cli():
-    """VL CLI tool"""
-    pass
+package_cli = {}
 
-@click.group()
-def new():
-    """Create a new blueprint or stack."""
-    pass
+import vendorless
+for module_info in pkgutil.iter_modules(vendorless.__path__):
+    try:
+        package_cli[module_info.name] = __import__(f'vendorless.{module_info.name}.commands', fromlist=['cli'])
+    except ImportError:
+        pass
 
-@new.command()
-def module():
-    """Create a new module."""
-    click.echo("Initializing new module.")
-    templates_path = importlib.resources.files('vendorless.core.templates')
-    cookiecutter(str(templates_path / 'module'))
-    click.echo("New module initialized.")
+@click.command(context_settings=dict(ignore_unknown_options=True))
+@click.option("-p", '--package', default="core", type=click.Choice(sorted(package_cli.keys())), help="The package that you want to run commands from.")
+@click.argument("args", nargs=-1, type=click.UNPROCESSED)
+def main(package, args):
+    """Dispatcher CLI."""
+    group = getattr(package_cli.get(package, {}), 'cli', None)
+    if not group:
+        click.echo(f"Plugin '{package}' not found.", err=True)
+        raise SystemExit(1)
 
-@new.command()
-@click.argument("name")
-def stack(name):
-    """Create a new stack."""
-    click.echo(f"New stack '{name}' created.")
+    group.main(args=args, standalone_mode=False)
 
-@click.command()
-def render():
-    """Render the project."""
 
-    # pass python file name
-    # run file
-    # all constructed services, volumes, and networks will be rendered
-
-    click.echo("Project rendered.")
-
-cli.add_command(new)
-cli.add_command(render)
-
-if __name__ == '__main__':
-    cli()
+if __name__ == "__main__":
+    main()

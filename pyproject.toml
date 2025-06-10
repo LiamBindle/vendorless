@@ -15,7 +15,8 @@ dependencies = [
     "cookiecutter",
     "jinja2",
     "vendorless-postgres @ file:///home/liam/projects/vendorless/v2/modules/postgres",
-    "attrs (>=25.3.0,<26.0.0)"
+    "attrs (>=25.3.0,<26.0.0)",
+    "rich (>=14.0.0,<15.0.0)"
 ]
 
 [tool.poetry]
@@ -29,7 +30,7 @@ include = [
 ]
 
 [tool.poetry.scripts]
-vl = "vendorless.core.cli:cli"
+vl = "vendorless.core.cli:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"

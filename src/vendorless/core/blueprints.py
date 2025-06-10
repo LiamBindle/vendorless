@@ -96,7 +96,9 @@ class Blueprint:
 
 
     @classmethod
-    def render_stack(cls, stack_root: Path):
+    def render_stack(cls, stack_root: str | Path):
+        if isinstance(stack_root, str):
+            stack_root = Path(stack_root)
         docker_compose = {}
         for blueprint in _blueprints.values():
             blueprint._render(stack_root, docker_compose)
