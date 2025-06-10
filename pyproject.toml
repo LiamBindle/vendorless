@@ -14,7 +14,7 @@ dependencies = [
     "pyyaml",
     "cookiecutter",
     "jinja2",
-    "vendorless-postgres @ file:///home/liam/projects/vendorless/v2/modules/postgres",
+    # "vendorless-postgres @ file:///home/liam/projects/vendorless/v2/modules/postgres",
     "attrs (>=25.3.0,<26.0.0)",
     "rich (>=14.0.0,<15.0.0)"
 ]
