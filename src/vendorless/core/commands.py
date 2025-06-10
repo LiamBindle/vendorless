@@ -74,11 +74,11 @@ def run_command(*command: str):
 
 @dev.command()
 def docs_serve():
-    run_command('poetry', 'run', 'mkdocs', 'serve')
+    run_command('mkdocs', 'serve')
 
 @dev.command()
 def docs_build():
-    run_command('poetry', 'run', 'mkdocs', 'build', '-d', f'out/docs')
+    run_command('mkdocs', 'build', '-d', 'out/docs')
 
 
 # install and run 
