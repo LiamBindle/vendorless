@@ -1,0 +1,22 @@
+site_name: vendorless.{{ cookiecutter.name }}
+theme:
+  name: material
+plugins:
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          docstring_style: numpy
+          summary: true
+          show_labels: false
+          docstring_section_style: table
+          filters: "public"
+          show_root_heading: true
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
+          line_length: 80
+          modernize_annotations: true
+          show_signature: true
+          members_order: source
+          summary: true
+    default_handler: python

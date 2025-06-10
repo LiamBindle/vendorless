@@ -19,6 +19,10 @@ include = [
     "vendorless/{{ cookiecutter.name }}/templates",
 ]
 
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6.1"
+mkdocstrings = {extras = ["python"], version = "^0.29.1"}
+mkdocs-material = "^9.6.14"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

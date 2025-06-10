@@ -35,6 +35,12 @@ vl = "vendorless.core.cli:cli"
 pytest = "^8.4.0"
 
 
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6.1"
+mkdocstrings = {extras = ["python"], version = "^0.29.1"}
+mkdocs-material = "^9.6.14"
+
 [tool.poetry.dependencies]
 vendorless-postgres = {develop = true}
 
