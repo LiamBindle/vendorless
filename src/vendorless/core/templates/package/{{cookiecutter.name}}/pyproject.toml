@@ -12,6 +12,11 @@ dependencies = [
 ]
 
 [tool.poetry]
+
+homepage = "https://{{ cookiecutter.github_username }}.github.io/vendorless-{{ cookiecutter.name }}/"
+documentation = "https://{{ cookiecutter.github_username }}.github.io/vendorless-{{ cookiecutter.name }}/"
+repository = "https://github.com/{{ cookiecutter.github_username }}/vendorless-{{ cookiecutter.name }}"
+
 packages = [
     { include = "vendorless/{{ cookiecutter.name }}", from = "src" },
 ]

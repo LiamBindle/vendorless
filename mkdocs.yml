@@ -1,7 +1,19 @@
 site_name: vendorless
+site_url: https://liambindle.github.io/vendorless/
+repo_url: https://github.com/LiamBindle/vendorless
+edit_uri: blob/main/docs/
 theme:
   name: material
+  logo: assets/square.png
+  favicon: assets/favicon.ico
+  palette:
+    primary: white
+    accent: deep purple
+  features:
+    - navigation.instant
+    - navigation.instant.progress
 plugins:
+- search
 - mkdocstrings:
     handlers:
       python:

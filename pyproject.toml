@@ -21,6 +21,10 @@ dependencies = [
 
 [tool.poetry]
 
+homepage = "https://liambindle.github.io/vendorless/"
+documentation = "https://liambindle.github.io/vendorless/"
+repository = "https://github.com/LiamBindle/vendorless"
+
 packages = [
     { include = "vendorless/core", from = "src" },
 ]
