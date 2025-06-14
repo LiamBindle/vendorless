@@ -1,27 +1,10 @@
-[project]
-name = "vendorless-core"
-version = "0.1.3"
-description = ""
-authors = [
-    { name = "Liam Bindle", email ="liambindle@gmail.com" }
-]
-license = { text = "MIT" }
-readme = "README.md"
-requires-python = ">=3.11"
-
-dependencies = [
-    "click",
-    "pyyaml",
-    "cookiecutter",
-    "jinja2",
-    # "vendorless-postgres @ file:///home/liam/projects/vendorless/v2/modules/postgres",
-    "attrs (>=25.3.0,<26.0.0)",
-    "rich (>=14.0.0,<15.0.0)",
-    "pymdown-extensions (>=10.15,<11.0)"
-]
-
 [tool.poetry]
-
+name = "vendorless-core"
+version = "0.1.4"
+description = ""
+authors = ["Liam Bindle <liambindle@gmail.com>"]
+license = "MIT"
+readme = "README.md"
 homepage = "https://liambindle.github.io/vendorless/"
 documentation = "https://liambindle.github.io/vendorless/"
 repository = "https://github.com/LiamBindle/vendorless"
@@ -37,30 +20,25 @@ include = [
 [tool.poetry.scripts]
 vl = "vendorless.core.cli:main"
 
-# [tool.poetry.group.dev.dependencies]
-# pytest = "^8.4.0"
-# mkdocs = "^1.6.1"
-# mkdocstrings = {extras = ["python"], version = "^0.29.1"}
-# mkdocs-material = "^9.6.14"
-
 [tool.poetry.dependencies]
-click = ">=8.2.0,<9.0.0" 
-pyyaml = ">=6.0.0,<7.0.0" 
+python = ">=3.11"
+click = ">=8.2.0,<9.0.0"
+pyyaml = ">=6.0.0,<7.0.0"
 cookiecutter = ">=2.6.0,<3.0.0"
 jinja2 = ">=3.1.0,<4.0.0"
-attrs = ">=25.3.0,<26.0.0" 
+attrs = ">=25.3.0,<26.0.0"
 rich = ">=14.0.0,<15.0.0"
 pymdown-extensions = ">=10.15,<11.0"
 
+# Optional dev dependencies
 pytest = { version = "^8.4.0", optional = true }
 mkdocs = { version = "^1.6.1", optional = true }
 mkdocstrings = {extras = ["python"], version = "^0.29.1", optional = true }
 mkdocs-material = { version = "^9.6.14", optional = true }
 
+[tool.poetry.extras]
+dev = ["pytest", "mkdocs", "mkdocstrings", "mkdocs-material"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.extras]
-dev = ["pytest", "mkdocs", "mkdocstrings", "mkdocs-material"]

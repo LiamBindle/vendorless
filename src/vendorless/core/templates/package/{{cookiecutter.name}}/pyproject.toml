@@ -1,18 +1,10 @@
-[project]
+[tool.poetry]
 name = "vendorless-{{ cookiecutter.name }}"
 version = "{{ cookiecutter.version }}"
 description = "{{ cookiecutter.description }}"
-authors = [
-    {name = "{{ cookiecutter.author }}", email = "{{ cookiecutter.email }}"}
-]
-license = {text = "{{ cookiecutter.license }}"}
+authors = ["{{ cookiecutter.author }} <{{ cookiecutter.email }}>"]
+license = "{{ cookiecutter.license }}"
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = [
-]
-
-[tool.poetry]
-
 homepage = "https://{{ cookiecutter.github_username }}.github.io/vendorless-{{ cookiecutter.name }}/"
 documentation = "https://{{ cookiecutter.github_username }}.github.io/vendorless-{{ cookiecutter.name }}/"
 repository = "https://github.com/{{ cookiecutter.github_username }}/vendorless-{{ cookiecutter.name }}"
@@ -24,10 +16,12 @@ include = [
     "vendorless/{{ cookiecutter.name }}/templates",
 ]
 
-[tool.poetry.group.docs.dependencies]
-mkdocs = "^1.6.1"
-mkdocstrings = {extras = ["python"], version = "^0.29.1"}
-mkdocs-material = "^9.6.14"
+[tool.poetry.dependencies]
+vendorless-core = "^0.1.0"
+
+[tool.poetry.group.dev.dependencies]
+vendorless-core = { version = "^0.1.0", extras = ["dev"] }
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
