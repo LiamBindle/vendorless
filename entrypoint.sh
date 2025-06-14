@@ -13,8 +13,7 @@ if [ -z "$(ls -A /package)" ]; then
         poetry add "$1"
         shift
     done
-    poetry add mkdocs
-    poetry install --no-root 
+    poetry install --no-root
     which mkdocs 
 else
     cd /package
