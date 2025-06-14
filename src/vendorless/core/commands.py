@@ -28,7 +28,7 @@ def new():
 @cli.group()
 @click.argument('stack', type=click.STRING) # foo.py for local, package.module for package
 @click.option('-s', '--secrets', type=click.Path(exists=True, file_okay=False, dir_okay=True), default=None, help='path to secrets dir')
-def build(stack: str, secrets_dir):
+def build(stack: str, secrets):
     """
     Build a stack.
 
