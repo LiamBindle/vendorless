@@ -15,13 +15,14 @@ def cli():
     pass
 
 @cli.command()
-def new():
+@click.option('-o', '--output-dir', type=click.Path(exists=True, file_okay=False, dir_okay=True), default='.', help='path to secrets dir')
+def new(output_dir: str):
     """
     Create a new package. 
     """
     click.echo("Initializing new package.")
     templates_path = importlib.resources.files('vendorless.core.templates')
-    cookiecutter(str(templates_path / 'package'))
+    cookiecutter(str(templates_path / 'package'), output_dir=output_dir)
     click.echo("New package initialized.")
 
 
