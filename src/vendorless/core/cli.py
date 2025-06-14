@@ -5,27 +5,48 @@ import click
 
 import pkgutil
 import sys
-
-package_cli = {}
-
 import vendorless
+
+# package_cli = {}
+
+# for module_info in pkgutil.iter_modules(vendorless.__path__):
+#     try:
+#         package_cli[module_info.name] = __import__(f'vendorless.{module_info.name}.commands', fromlist=['cli'])
+#     except ImportError:
+#         pass
+
+# @click.command(context_settings=dict(ignore_unknown_options=True))
+# @click.option("-p", '--package', default="core", type=click.Choice(sorted(package_cli.keys())), help="The package that you want to run commands from.")
+# @click.argument("args", nargs=-1, type=click.UNPROCESSED)
+# def main(package, args):
+#     """Dispatcher CLI."""
+#     group = getattr(package_cli.get(package, {}), 'cli', None)
+#     if not group:
+#         click.echo(f"Plugin '{package}' not found.", err=True)
+#         raise SystemExit(1)
+
+#     group.main(args=args, standalone_mode=False)
+
+# Discover all subcommands
+package_cli = {}
 for module_info in pkgutil.iter_modules(vendorless.__path__):
     try:
-        package_cli[module_info.name] = __import__(f'vendorless.{module_info.name}.commands', fromlist=['cli'])
+        mod = __import__(f'vendorless.{module_info.name}.commands', fromlist=['cli'])
+        cli = getattr(mod, 'cli', None)
+        if cli is not None:
+            package_cli[module_info.name] = cli
     except ImportError:
         pass
 
-@click.command(context_settings=dict(ignore_unknown_options=True))
-@click.option("-p", '--package', default="core", type=click.Choice(sorted(package_cli.keys())), help="The package that you want to run commands from.")
-@click.argument("args", nargs=-1, type=click.UNPROCESSED)
-def main(package, args):
-    """Dispatcher CLI."""
-    group = getattr(package_cli.get(package, {}), 'cli', None)
-    if not group:
-        click.echo(f"Plugin '{package}' not found.", err=True)
-        raise SystemExit(1)
 
-    group.main(args=args, standalone_mode=False)
+@click.group()
+def main():
+    """Dispatcher CLI."""
+
+
+# Dynamically add subcommands to the main group
+for name, cmd in package_cli.items():
+    main.add_command(cmd, name=name)
 
 
 if __name__ == "__main__":
