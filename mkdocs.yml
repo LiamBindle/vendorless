@@ -12,6 +12,9 @@ theme:
   features:
     - navigation.instant
     - navigation.instant.progress
+nav:
+  - index.md
+  - level3.md
 plugins:
 - search
 - mkdocstrings:
@@ -32,3 +35,5 @@ plugins:
           members_order: source
           summary: true
     default_handler: python
+markdown_extensions:
+  - pymdownx.superfences

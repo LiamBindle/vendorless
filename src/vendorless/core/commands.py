@@ -1,12 +1,17 @@
 import click
 import importlib.resources
 from cookiecutter.main import cookiecutter
+import tempfile
 
 from pathlib import Path
 
 import runpy
 import subprocess
 from rich.console import Console
+import shutil
+
+import re
+import os
 
 from vendorless.core.blueprints import Blueprint
 
@@ -59,19 +64,36 @@ def dev():
     pass
 
 
-def run_command(*command: str):
+def run_command(*command: str, return_stdout: bool=False, input: str=None, cwd=None, env=None) -> str:
     process = subprocess.Popen(
         command,
+        stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         universal_newlines=True,
         bufsize=1,
+        cwd=cwd,
+        env=env,
     )
-    console = Console()
-    with process.stdout:
-        for line in iter(process.stdout.readline, ""):
-            console.print(line, end="")
-    process.wait()
+
+    if not return_stdout:
+        if input:
+            process.stdin.write(input)
+            process.stdin.flush()
+            process.stdin.close()
+            
+        console = Console()
+        with process.stdout:
+            for line in iter(process.stdout.readline, ""):
+                console.print(line, end="")
+        process.wait()
+        if process.returncode != 0:
+            raise RuntimeError()
+        return ""
+    else:
+        stdout, stderr = process.communicate()
+        return stdout
+
 
 @dev.command()
 def docs_serve():
@@ -80,6 +102,54 @@ def docs_serve():
 @dev.command()
 def docs_build():
     run_command('mkdocs', 'build', '-d', 'out/docs')
+
+
+def extract_blocks(filepath: str, block: str):
+    pattern = re.compile(fr"```{block} *\n(.*?)```", flags=re.MULTILINE | re.DOTALL)
+    with open(filepath, 'r', encoding='utf-8') as f:
+        matches = pattern.finditer(f.read())
+
+    blocks = ''
+    for match in matches:
+        blocks += ''.join(match.groups())
+    return blocks
+
+@dev.command()
+@click.argument('filepath', type=click.Path(exists=True, file_okay=True, dir_okay=False))
+@click.option('-t', '--temp-dir', is_flag=True)
+def docs_run(filepath: str, temp_dir: bool):
+
+    bash_script = extract_blocks(filepath=filepath, block="console")
+    bash_script = ''.join(l.removeprefix("$").strip(' ') for l in bash_script.splitlines(keepends=True) if l.startswith("$"))
+
+
+    input = extract_blocks(filepath=filepath, block="salt")
+    input = ''.join(l.split(':', maxsplit=1)[1].strip(' ') for l in input.splitlines(keepends=True))
+
+    tmpdir = tempfile.TemporaryDirectory(prefix='vendorless.core.', delete=not temp_dir)
+
+    env = os.environ.copy()
+    env.pop("VIRTUAL_ENV", None)  # don't modify the current environment
+
+    if not temp_dir:
+        run_command(
+            'bash', '-c', f"set -x\n{bash_script}",
+            input=input,
+            env=env,
+        )
+    else:
+        with tmpdir:
+            run_command(
+                'bash', '-c', f"set -x\n{bash_script}",
+                input=input,
+                cwd=tmpdir.name,
+                env=env,
+            )
+            shutil.rmtree(tmpdir.name)
+        
+    
+
+
 
 
 # install and run 
