@@ -14,7 +14,7 @@ $ poetry install
 ## Create a New Package
 
 ```console
-$ poetry run vl new -o packages
+$ poetry run vl core new -o packages
 ```
 
 ```salt
