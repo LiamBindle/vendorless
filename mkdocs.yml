@@ -14,7 +14,11 @@ theme:
     - navigation.instant.progress
 nav:
   - index.md
-  - level3.md
+  - level1.md
+  - level2.md
+#  - Apps
+#  - Blueprints
+#  - Parameters
 plugins:
 - search
 - mkdocstrings:

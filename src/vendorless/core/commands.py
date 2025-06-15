@@ -19,16 +19,6 @@ from vendorless.core.blueprints import Blueprint
 def cli():
     pass
 
-@cli.command()
-@click.option('-o', '--output-dir', type=click.Path(exists=True, file_okay=False, dir_okay=True), default='.', help='path to secrets dir')
-def new(output_dir: str):
-    """
-    Create a new package. 
-    """
-    click.echo("Initializing new package.")
-    templates_path = importlib.resources.files('vendorless.core.templates')
-    cookiecutter(str(templates_path / 'package'), output_dir=output_dir)
-    click.echo("New package initialized.")
 
 
 @cli.group()
@@ -60,8 +50,19 @@ def run(stack):
     pass
 
 @cli.group()
-def dev():
+def pkg():
     pass
+
+@pkg.command()
+@click.option('-o', '--output-dir', type=click.Path(exists=True, file_okay=False, dir_okay=True), default='.', help='path to secrets dir')
+def new(output_dir: str):
+    """
+    Create a new package. 
+    """
+    click.echo("Initializing new package.")
+    templates_path = importlib.resources.files('vendorless.core.templates')
+    cookiecutter(str(templates_path / 'package'), output_dir=output_dir)
+    click.echo("New package initialized.")
 
 
 def run_command(*command: str, return_stdout: bool=False, input: str=None, cwd=None, env=None) -> str:
@@ -95,11 +96,11 @@ def run_command(*command: str, return_stdout: bool=False, input: str=None, cwd=N
         return stdout
 
 
-@dev.command()
+@pkg.command()
 def docs_serve():
     run_command('mkdocs', 'serve')
 
-@dev.command()
+@pkg.command()
 def docs_build():
     run_command('mkdocs', 'build', '-d', 'out/docs')
 
@@ -114,7 +115,7 @@ def extract_blocks(filepath: str, block: str):
         blocks += ''.join(match.groups())
     return blocks
 
-@dev.command()
+@pkg.command()
 @click.argument('filepath', type=click.Path(exists=True, file_okay=True, dir_okay=False))
 @click.option('-t', '--temp-dir', is_flag=True)
 def docs_run(filepath: str, temp_dir: bool):
@@ -148,7 +149,10 @@ def docs_run(filepath: str, temp_dir: bool):
             shutil.rmtree(tmpdir.name)
         
     
-
+@pkg.command()
+def publish():
+    run_command('poetry', 'build')
+    run_command('poetry', 'publish')
 
 
 
