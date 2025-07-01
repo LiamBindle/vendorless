@@ -1,70 +1,38 @@
-# Running Apps
+# Rendering Blueprints
+
+Below is an example of setting up a Keycloak authentication server.
+The `vendorless.keycloak` package provides an authentication server blueprint that we will render to Docker Compose files, which we will then run. The general workflow is the same for rendering a blueprint from a different package.   
 
 
-## Commands
-
-The basic commands to interact with an app are `setup` and `run`.
-Package developers will also `pkg` to run subcommands to create new packages and development utilities.
-
-Commands come from packages, so you need to know what package the command that command comes from.
-The `core` package has all of the basic commands for setting up and running apps, as well as the tools that developers use to create new packages.
-
-The command-line tool `vl` is used to run a `<command>` from a `<package>`.
-
-```
-vl <package> <command> <arguments>...
-```
-
-The instructions on this page cover how to setup and run an app, using the [Basic Database]() app from the [vendorless.postgres]() package.
-
-
----
-
-## Installation
+First, install the package that provides the blueprint.
 
 ```console
-$ git clone git@github.com:LiamBindle/vendorless-postgres.git
-$ cd vendorless-postgres
-$ poetry install
+$ pip install vendorless-keycloak
 ```
 
----
-
-## Setting up an App
-
-The `setup` command is used to build the configuration files for an app.
-Apps are found in the `apps` submodule of a package.
+Next, run the `vl core render` command to render a blueprint.
 
 ```
-vl core setup vendorless.<package>.apps.<app_name>
+vl core render -m vendorless.<package>.blueprints.<app_name>
 ```
 
-For our basic database example, the command would be
+For our keycloak authentication server the command would be
 
 ```console
-$ vl core setup vendorless.postgres.stacks.basic_database
+$ vl core render -m vendorless.keycloak.blueprints.authentication_server
 ```
 
-This command builds the a [Docker Compose]() project for the app.
+Now you should notice the Docker Compose files in a subdirectory.
 
-```tree
-./
-    vendorless.postgres.stacks.basic_database/
-        docker-compose.yaml
+```
+.
+└── vendorless.keycloak.blueprints.auth_server/
+    └── docker-compose.yaml
 ```
 
-## Running an App
-
-The `run` command is used to run an app.
-This command takes the path to the app's configuration as an argument.
-For our basic database example, the command would be 
+Now you can run the app using `docker-compose`.
 
 ```console
-$ vl core run vendorless.postgres.stacks.basic_database
+$ cd vendorless.keycloak.blueprints.auth_server/
+$ docker compose up
 ```
-
----
-
-Apps come from packages.
-You can find premade apps from the [Awesome List of Vendorless Packages](),
-or you can write your own apps and blueprints by [Creating a Package]().    

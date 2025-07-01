@@ -15,3 +15,36 @@ Vendorless is designed for small- to medium-sized projects that value **self-con
 1. **Python-based** infrastructure-as-code (IaC). Blueprints are Python modules, which allows of the use of complex scriping, looping, and logic in the provisioning of services.  
 2. **Parameter liking** allows the outputs of one service to be linked to the inputs of another services. Service templates are effectively black boxes with input parameters and output parameters that can be linked to the parameters of other services (e.g., ports, URLs, file paths, environment variables).
 3. **Extensibility** is provided by namespace packaging. Vendorless package provide service templates (for use in blueprints), commands (e.g., key generation), and/or blueprints (ready-made applications). You can leverage community maintained packages, or create your own. 
+
+
+## Commands
+
+Commands come from packages, so you need to know what package the command comes from. The command-line tool `vl` is used to run a `<command>` from a `<package>`.
+
+```
+vl <package> <command> <arguments>...
+```
+
+For example:
+
+```console
+$ vl core render -m vendorless.keycloak.blueprints.auth_server
+```
+
+## Commands via Docker
+
+Alternatively, you can run vendorless commands via docker like so:
+
+```
+docker run ghcr.io/liambindle/vendorless:latest \
+    vendorless.<packages>... \
+    <package> <command> <arguments>...
+```
+
+For example
+
+```console
+$ docker run ghcr.io/liambindle/vendorless:latest \
+    vendorless.keycloak \
+    core render -m vendorless.keycloak.blueprints.auth_server
+```
