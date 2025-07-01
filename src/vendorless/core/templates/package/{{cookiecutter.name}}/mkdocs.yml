@@ -4,7 +4,7 @@ repo_url: https://github.com/{{ cookiecutter.github_username }}/vendorless-{{ co
 edit_uri: blob/main/docs/
 theme:
   name: material
-  logo: https://raw.githubusercontent.com/LiamBindle/vendorless/refs/heads/main/docs/assets/square.png
+  logo: https://raw.githubusercontent.com/LiamBindle/vendorless/refs/heads/main/docs/assets/square-circle.png
   favicon: https://raw.githubusercontent.com/LiamBindle/vendorless/refs/heads/main/docs/assets/favicon.ico
   palette:
     primary: white
@@ -12,6 +12,7 @@ theme:
   features:
     - navigation.instant
     - navigation.instant.progress
+    - navigation.tabs
 plugins:
 - search
 - mkdocstrings:

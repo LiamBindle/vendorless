@@ -4,7 +4,7 @@ repo_url: https://github.com/LiamBindle/vendorless
 edit_uri: blob/main/docs/
 theme:
   name: material
-  logo: assets/square.png
+  logo: assets/square-circle.png
   favicon: assets/favicon.ico
   palette:
     primary: white
@@ -12,13 +12,17 @@ theme:
   features:
     - navigation.instant
     - navigation.instant.progress
+    - navigation.tabs
 nav:
-  - index.md
-  - level1.md
-  - level2.md
-#  - Apps
-#  - Blueprints
-#  - Parameters
+  - Vendorless:
+    - About: index.md
+    - level1.md
+    - level2.md
+  - API:
+    - Blueprints: blueprints.md
+    - Services: services.md
+    - Volumes: volumes.md
+    - Networks: networks.md
 plugins:
 - search
 - mkdocstrings:
