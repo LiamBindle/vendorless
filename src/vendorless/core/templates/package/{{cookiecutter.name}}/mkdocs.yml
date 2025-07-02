@@ -13,6 +13,15 @@ theme:
     - navigation.instant
     - navigation.instant.progress
     - navigation.tabs
+nav:
+  # auto-generate README with basic install, render, run instructions. Link to main page.
+  - About:
+    - Overview: index.md
+    - Vendorless: https://liambindle.github.io/vendorless/
+  - Blueprints: 
+    - blueprints.md
+  - Service Templates:
+    - service-templates.md
 plugins:
 - search
 - mkdocstrings:

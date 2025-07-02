@@ -14,13 +14,16 @@ theme:
     - navigation.instant.progress
     - navigation.tabs
 nav:
-  - Vendorless:
-    - About: index.md
-    - level1.md
-    - level2.md
-  - API:
-    - Blueprints: blueprints.md
-    - Services: services.md
+  - About:
+    - Overview: index.md
+    - rendering-blueprints.md
+    - creating-packages.md
+  - Blueprints: 
+    - blueprints.md
+  - Service Templates:
+    - services.md
+  - Developer Documentation:
+    - Service Templates: service-templates.md
     - Volumes: volumes.md
     - Networks: networks.md
 plugins:
@@ -44,4 +47,6 @@ plugins:
           summary: true
     default_handler: python
 markdown_extensions:
+  - admonition
+  - pymdownx.details
   - pymdownx.superfences
