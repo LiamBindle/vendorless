@@ -105,6 +105,11 @@ def docs_build():
     run_command('mkdocs', 'build', '-d', 'out/docs')
 
 
+@pkg.command()
+def test():
+    run_command('pytest')
+
+
 def extract_blocks(filepath: str, block: str):
     pattern = re.compile(fr"```{block} *\n(.*?)```", flags=re.MULTILINE | re.DOTALL)
     with open(filepath, 'r', encoding='utf-8') as f:
