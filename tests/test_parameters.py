@@ -1,6 +1,6 @@
 # from vendorless.core import computed_parameter, DEFERRED #service
 # from vendorless.core.core import parameter
-from vendorless.core import computed_parameter, parameter, Blueprint
+from vendorless.core import computed_parameter, parameter, ServiceTemplate
 from typing import Any
 import attr
 import attrs
@@ -10,7 +10,7 @@ import pytest
 
 
 @dataclass
-class C(Blueprint):
+class C(ServiceTemplate):
     p: str = parameter()
     d: str = parameter('foo')
 

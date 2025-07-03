@@ -1,10 +1,10 @@
 from .parameters import parameter
-from .blueprints import Blueprint
+from .service_template import ServiceTemplate
 from dataclasses import dataclass
 
 
 @dataclass
-class Volume(Blueprint):
+class Volume(ServiceTemplate):
     """
     Represents a Docker volume configuration.
     """

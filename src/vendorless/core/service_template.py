@@ -4,7 +4,7 @@ import yaml
 import weakref
 from dataclasses import dataclass, is_dataclass, asdict
 
-_blueprints: weakref.WeakValueDictionary[int, 'Blueprint'] = weakref.WeakValueDictionary()
+_service_templates: weakref.WeakValueDictionary[int, 'ServiceTemplate'] = weakref.WeakValueDictionary()
 
 from typing import Generator, Iterator
 from importlib.resources.abc import Traversable
@@ -23,7 +23,7 @@ def get_template_dir_files(template_dir: Traversable, relative_to: PurePosixPath
 
 from .templating import ResourceLoader
 
-class Blueprint:
+class ServiceTemplate:
     def __init__(self) -> None:
         self._assert_is_dataclass()
     
@@ -33,7 +33,7 @@ class Blueprint:
 
     def __post_init__(self):
         self._assert_is_dataclass()
-        _blueprints[id(self)] = self
+        _service_templates[id(self)] = self
 
     def _copy_list(self) -> list[tuple[str, str]]:
         return []
@@ -88,7 +88,7 @@ class Blueprint:
                         
                         for second_key, v in kv.items():
                             if second_key in docker_compose[first_key]:
-                                raise ValueError(f'multiple blueprints render {first_key}.{second_key} ')
+                                raise ValueError(f'multiple service templates render {first_key}.{second_key} ')
                             docker_compose[first_key][second_key] = v
                 else:
                     with open(dst, 'w') as f:
@@ -100,11 +100,11 @@ class Blueprint:
         if isinstance(stack_root, str):
             stack_root = Path(stack_root)
         docker_compose = {}
-        for blueprint in _blueprints.values():
-            blueprint._render(stack_root, docker_compose)
+        for service_template in _service_templates.values():
+            service_template._render(stack_root, docker_compose)
         with open(stack_root/'docker-compose.yaml', 'w') as f:
             yaml.safe_dump(docker_compose, f)
 
 @dataclass
-class _DummyBlueprint(Blueprint):
+class _DummyServiceTemplates(ServiceTemplate):
     pass

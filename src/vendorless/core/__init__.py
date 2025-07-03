@@ -2,7 +2,7 @@ from .parameters import (
     parameter,
     computed_parameter
 )
-from .blueprints import (
-    Blueprint,
+from .service_template import (
+    ServiceTemplate,
 )
 from .volume import Volume

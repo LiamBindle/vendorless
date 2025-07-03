@@ -13,7 +13,7 @@ import shutil
 import re
 import os
 
-from vendorless.core.blueprints import Blueprint
+from vendorless.core.service_template import ServiceTemplate
 
 @click.group()
 def cli():
@@ -35,7 +35,7 @@ def build(stack: str, secrets):
         runpy.run_path(stack)
     else:
         runpy.run_module(stack)
-    Blueprint.render_stack('output')
+    ServiceTemplate.render_stack('output')
 
 
 @cli.group()
