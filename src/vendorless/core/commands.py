@@ -50,10 +50,10 @@ def run(stack):
     pass
 
 @cli.group()
-def pkg():
+def package():
     pass
 
-@pkg.command()
+@package.command()
 @click.option('-o', '--output-dir', type=click.Path(exists=True, file_okay=False, dir_okay=True), default='.', help='path to secrets dir')
 def new(output_dir: str):
     """
@@ -96,16 +96,16 @@ def run_command(*command: str, return_stdout: bool=False, input: str=None, cwd=N
         return stdout
 
 
-@pkg.command()
+@package.command()
 def docs_serve():
     run_command('mkdocs', 'serve')
 
-@pkg.command()
+@package.command()
 def docs_build():
     run_command('mkdocs', 'build', '-d', 'out/docs')
 
 
-@pkg.command()
+@package.command()
 def test():
     run_command('pytest')
 
@@ -120,7 +120,7 @@ def extract_blocks(filepath: str, block: str):
         blocks += ''.join(match.groups())
     return blocks
 
-@pkg.command()
+@package.command()
 @click.argument('filepath', type=click.Path(exists=True, file_okay=True, dir_okay=False))
 @click.option('-t', '--temp-dir', is_flag=True)
 def docs_run(filepath: str, temp_dir: bool):
@@ -154,7 +154,7 @@ def docs_run(filepath: str, temp_dir: bool):
             shutil.rmtree(tmpdir.name)
         
     
-@pkg.command()
+@package.command()
 def publish():
     run_command('poetry', 'build')
     run_command('poetry', 'publish')
