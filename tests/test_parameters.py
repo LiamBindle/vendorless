@@ -1,6 +1,6 @@
 # from vendorless.core import computed_parameter, DEFERRED #service
 # from vendorless.core.core import parameter
-from vendorless.core import computed_parameter, parameter, ServiceTemplate
+from vendorless.core import computed_parameter, parameter, ServiceTemplate, BlueprintParameter
 from typing import Any
 import attr
 import attrs
@@ -55,3 +55,19 @@ def test_kwarg():
     a = C(p="1")
     assert a.p == "1"
     assert a.cp == "computed-1"
+
+def test_blueprint_parameter():
+    a = C()
+    bp1 = BlueprintParameter("param1")  # no default
+    bp2 = BlueprintParameter("param2")  # infer default
+
+    a.p = bp1
+    a.d = bp2
+
+    assert a.d == "foo"
+
+    bp1.value = "bar"
+    assert a.p == "bar"
+
+    bp2.value = "baz"
+    assert a.d == "baz"

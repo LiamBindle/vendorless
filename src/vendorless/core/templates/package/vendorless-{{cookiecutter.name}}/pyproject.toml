@@ -17,6 +17,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
+python = ">=3.11"
 vendorless-core = "^0.1.0"
 
 [tool.poetry.group.dev.dependencies]
