@@ -21,9 +21,6 @@ nav:
   - Blueprints: 
     - blueprints.md
   - Service Templates:
-    - services.md
-  - Developer Documentation:
-    - Service Templates: service-templates.md
     - Volumes: volumes.md
     - Networks: networks.md
 plugins:
