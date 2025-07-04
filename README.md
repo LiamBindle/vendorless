@@ -1,5 +1,5 @@
 
-![Logo](assets/full.png)
+![Logo](https://raw.githubusercontent.com/LiamBindle/vendorless/refs/heads/main/docs/assets/full.png)
 
 Vendorless is a Python-based templating engine for rendering Docker Compose projects.
 In vendorless, *blueprints* are Python modules that configures the services that make up an application, like databases and servers. 
