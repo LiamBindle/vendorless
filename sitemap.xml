@@ -2,14 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://liambindle.github.io/vendorless/</loc>
-         <lastmod>2025-06-14</lastmod>
+         <lastmod>2025-07-04</lastmod>
+    </url>
+    <url>
+         <loc>https://liambindle.github.io/vendorless/api/</loc>
+         <lastmod>2025-07-04</lastmod>
     </url>
     <url>
          <loc>https://liambindle.github.io/vendorless/blueprints/</loc>
-         <lastmod>2025-06-14</lastmod>
+         <lastmod>2025-07-04</lastmod>
     </url>
     <url>
-         <loc>https://liambindle.github.io/vendorless/level3/</loc>
-         <lastmod>2025-06-14</lastmod>
+         <loc>https://liambindle.github.io/vendorless/creating-packages/</loc>
+         <lastmod>2025-07-04</lastmod>
+    </url>
+    <url>
+         <loc>https://liambindle.github.io/vendorless/networks/</loc>
+         <lastmod>2025-07-04</lastmod>
+    </url>
+    <url>
+         <loc>https://liambindle.github.io/vendorless/rendering-blueprints/</loc>
+         <lastmod>2025-07-04</lastmod>
+    </url>
+    <url>
+         <loc>https://liambindle.github.io/vendorless/volumes/</loc>
+         <lastmod>2025-07-04</lastmod>
     </url>
 </urlset>
