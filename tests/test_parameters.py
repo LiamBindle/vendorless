@@ -1,11 +1,12 @@
 # from vendorless.core import computed_parameter, DEFERRED #service
 # from vendorless.core.core import parameter
 from vendorless.core import computed_parameter, parameter, ServiceTemplate, ConfigurationParameter
+from vendorless.core.testing import stage_cli_prompt_responses
 from typing import Any
 import attr
 import attrs
 from dataclasses import dataclass
-from rich.prompt import Prompt
+
 
 import pytest
 
@@ -91,9 +92,13 @@ def test_configuration_parameter_3(monkeypatch):
     bp1 = ConfigurationParameter("param1")  # no default
     bp2 = ConfigurationParameter("param2")  # infer default
 
-    inputs = iter(["hello", "world"])
-    monkeypatch.setattr(Prompt, "ask",  lambda *args, **kwargs: next(inputs))
-    
+    stage_cli_prompt_responses(
+        monkeypatch,
+        [
+            "hello",
+            "world",
+        ]
+    )
     settings = {
         "param1": "hello",
         "param2": "world",
