@@ -1,10 +1,11 @@
 # from vendorless.core import computed_parameter, DEFERRED #service
 # from vendorless.core.core import parameter
-from vendorless.core import computed_parameter, parameter, ServiceTemplate, BlueprintParameter
+from vendorless.core import computed_parameter, parameter, ServiceTemplate, ConfigurationParameter
 from typing import Any
 import attr
 import attrs
 from dataclasses import dataclass
+from rich.prompt import Prompt
 
 import pytest
 
@@ -56,10 +57,10 @@ def test_kwarg():
     assert a.p == "1"
     assert a.cp == "computed-1"
 
-def test_blueprint_parameter():
+def test_configuration_parameter_1():
     a = C()
-    bp1 = BlueprintParameter("param1")  # no default
-    bp2 = BlueprintParameter("param2")  # infer default
+    bp1 = ConfigurationParameter("param1")  # no default
+    bp2 = ConfigurationParameter("param2")  # infer default
 
     a.p = bp1
     a.d = bp2
@@ -71,3 +72,31 @@ def test_blueprint_parameter():
 
     bp2.value = "baz"
     assert a.d == "baz"
+
+def test_configuration_parameter_2():
+    bp1 = ConfigurationParameter("param1")  # no default
+    bp2 = ConfigurationParameter("param2")  # infer default
+    
+    settings = {
+        "param1": "hello",
+        "param2": "world",
+    }
+    response = ConfigurationParameter.resolve(settings)
+    assert settings == response
+
+
+def test_configuration_parameter_3(monkeypatch):
+    # Stage the input to be returned when input() is called
+
+    bp1 = ConfigurationParameter("param1")  # no default
+    bp2 = ConfigurationParameter("param2")  # infer default
+
+    inputs = iter(["hello", "world"])
+    monkeypatch.setattr(Prompt, "ask",  lambda *args, **kwargs: next(inputs))
+    
+    settings = {
+        "param1": "hello",
+        "param2": "world",
+    }
+    response = ConfigurationParameter.resolve({})
+    assert settings == response

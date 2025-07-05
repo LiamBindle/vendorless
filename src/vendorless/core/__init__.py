@@ -1,7 +1,7 @@
 from .parameters import (
     parameter,
     computed_parameter,
-    BlueprintParameter
+    ConfigurationParameter
 )
 from .service_template import (
     ServiceTemplate,
