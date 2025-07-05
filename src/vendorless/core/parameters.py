@@ -89,7 +89,7 @@ INFER=object()
 
 
 class ConfigurationParameter:
-    _ALL_BLUEPRINT_PARAMETERS: list[weakref.ReferenceType['ConfigurationParameter']] = []
+    _ALL_CONFIGURATION_PARAMETERS: list[weakref.ReferenceType['ConfigurationParameter']] = []
 
     @property
     def value(self):
@@ -98,7 +98,7 @@ class ConfigurationParameter:
     @value.setter
     def value(self, value):
         self._value = value
-        for ref in self._dependants:
+        for ref in self._connected_parameters:
             ref.param.__set__(ref.obj, value)
 
     # blueprint parameters should be documented in docs, not a description attribute
@@ -108,8 +108,8 @@ class ConfigurationParameter:
         self.default = default
         self.choices = choices
         self.type = type
-        ConfigurationParameter._ALL_BLUEPRINT_PARAMETERS.append(weakref.ref(self))
-        self._dependants: list[ParameterReference] = []
+        ConfigurationParameter._ALL_CONFIGURATION_PARAMETERS.append(weakref.ref(self))
+        self._connected_parameters: list[ParameterReference] = []
         self.value = UNRESOLVED if default is INFER else default
 
     
@@ -117,30 +117,19 @@ class ConfigurationParameter:
         if self.default is INFER and reference.param.default is not UNRESOLVED:
             if self.value != UNRESOLVED and self.value != reference.param.default:
                 warnings.warn(
-                    f"Blueprint parameter '{self.keys}' is inferring a default value from parameters with different values."
+                    f"Configuration parameter '{self.keys}' is inferring a default value from parameters with different values."
                     f"Previous default value: {self.value}. New default value: {reference.param.default}."
                 )
             self.value = reference.param.default
-        self._dependants.append(reference)
+        self._connected_parameters.append(reference)
         reference.param.__set__(reference.obj, self.value)
     
     @classmethod
     def resolve(
-        cls, 
-        console: Console,
-        conf: pathlib.Path | None = None,
-        root_element: str=None
+        cls,
+        settings: dict,
     ):
-        settings = {}
-        if conf:
-            with open(conf, 'r') as f:
-                console.print(f"Loading settings from [bold]{f.name}[/bold]")
-                s = yaml.safe_load(f)
-                if root_element:
-                    settings = s[root_element]
-                else:
-                    settings = s
-        
+  
         def setting_exists(keys: tuple[str, ...], settings: dict):
             s = settings
             for k in keys:
@@ -166,12 +155,12 @@ class ConfigurationParameter:
         last_level: tuple[str, ...] = ()
         indent = 0
 
-        for bp_wr in cls._ALL_BLUEPRINT_PARAMETERS:
-            blueprint_parameter: ConfigurationParameter | None =  bp_wr()
-            if blueprint_parameter is None:
+        for configuration_parameter_wr in cls._ALL_CONFIGURATION_PARAMETERS:
+            configuration_parameter: ConfigurationParameter | None =  configuration_parameter_wr()
+            if configuration_parameter is None:
                 continue
 
-            current_level: tuple[str, ...] = blueprint_parameter.keys[:-1]
+            current_level: tuple[str, ...] = configuration_parameter.keys[:-1]
             if current_level != last_level:
                 start_level = next(
                     (i for i, (kc, kl) in enumerate(zip(current_level, last_level)) if kc != kl),
@@ -183,38 +172,37 @@ class ConfigurationParameter:
                 
             indent = len(current_level) * 4
 
-            if setting_exists(blueprint_parameter.keys, settings):
-                s = get_setting(blueprint_parameter.keys, settings)
-                s = blueprint_parameter.type(s)
-                console.print(f"{' '*indent}[cyan]{blueprint_parameter.keys[-1]}[/cyan]: {s}")
+            if setting_exists(configuration_parameter.keys, settings):
+                s = get_setting(configuration_parameter.keys, settings)
+                s = configuration_parameter.type(s)
+                console.print(f"{' '*indent}[cyan]{configuration_parameter.keys[-1]}[/cyan]: {s}")
             else:
                 s = ""
                 while isinstance(s, str) and len(s) == 0:
                     kwargs = {}
-                    default = blueprint_parameter.value
+                    default = configuration_parameter.value
                     if default is UNRESOLVED:
                         default = None
                     else:
                         kwargs['default'] = default
 
                     s = Prompt.ask(
-                        f"{' '*indent}[cyan bold]{blueprint_parameter.keys[-1]}[/cyan bold]",
+                        f"{' '*indent}[cyan bold]{configuration_parameter.keys[-1]}[/cyan bold]",
                         console=console,
                         **kwargs,
-                        choices=blueprint_parameter.choices,
+                        choices=configuration_parameter.choices,
                     )
                 
-                s = blueprint_parameter.type(s)
-                set_setting(blueprint_parameter.keys, s, settings)
+                s = configuration_parameter.type(s)
+                set_setting(configuration_parameter.keys, s, settings)
             
-            blueprint_parameter.value = s
+            configuration_parameter.value = s
         
-        with open('vendorless.yaml', 'w') as f:
-            yaml.safe_dump(settings, f)
+        return settings
 
             
 def configuration_parameter(*keys: str, default=INFER, type: type=str, choices: list[str]=None):
-    for c in ConfigurationParameter._ALL_BLUEPRINT_PARAMETERS:
+    for c in ConfigurationParameter._ALL_CONFIGURATION_PARAMETERS:
         c : None | ConfigurationParameter = c()
         if c is None or c.keys != keys:
             continue
