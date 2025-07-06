@@ -123,39 +123,85 @@ class ConfigurationParameter:
             self.value = reference.param.default
         self._connected_parameters.append(reference)
         reference.param.__set__(reference.obj, self.value)
+
+class Configuration:
+    INDENT = ' '*4
+
+    def __init__(self, path: pathlib.Path | None, config_selector: str | None) -> 'Configuration':
+        if path is None:
+            self._config = {}
+        else:
+            console.print(f"Loading configuration from [bold]{str(path)}[/bold]")
+            with open(path, 'r') as f:
+                self._config = yaml.safe_load(f)
+        
+        if config_selector is not None:
+            self._config = self.get(config_selector)
     
+    def has(self, keys: tuple[str, ...], *, subset: dict | None = None):
+        s = self._config if subset is None else subset
+        if len(keys) == 1:
+            return keys[0] in s
+        elif keys[0] not in s:
+            return False
+        else:
+            return self.has(keys[1:], subset=s[keys[0]]) 
+    
+    def get(self, keys: tuple[str, ...], *, subset: dict | None = None):
+        s = self._config if subset is None else subset
+        if len(keys) == 1:
+            return s[keys[0]]
+        else:
+            return self.get(keys[1:], subset=s[keys[0]])  
+    
+    def set(self, keys: tuple[str, ...], value, *, subset: dict | None = None):
+        s = self._config if subset is None else subset
+        if len(keys) == 1:
+            s[keys[0]] = value
+        else:
+            if keys[0] not in s:
+                s[keys[0]] = {}
+            self.set(keys[1:], value, subset=s[keys[0]])
+
     @classmethod
-    def resolve(
-        cls,
-        settings: dict,
-    ):
-  
-        def setting_exists(keys: tuple[str, ...], settings: dict):
-            s = settings
-            for k in keys:
-                if (k not in s):
-                    return False
-                s = s[k]
-            return True
+    def print_scope(cls, indent_level: int, key: str):
+        s = f"{cls.INDENT*indent_level}[cyan]{key}[/cyan]:"
+        console.print(s)
+
+    @classmethod
+    def print_setting(cls, indent_level: int, key: str, value):
+        s = f"{cls.INDENT*indent_level}[cyan]{key}[/cyan]: {value}"
+        console.print(s)
         
-        def get_setting(keys: tuple[str, ...], settings: dict):
-            if len(keys) == 1:
-                return settings[keys[0]]
+    @classmethod
+    def prompt_setting(cls, indent_level: int, configuration_parameter: ConfigurationParameter) -> Any:
+        s = ""
+        while isinstance(s, str) and len(s) == 0:
+            kwargs = {}
+            default = configuration_parameter.value
+            if default is UNRESOLVED:
+                default = None
             else:
-                return get_setting(keys[1:], settings[keys[0]])  
-        
-        def set_setting(keys: tuple[str, ...], value, settings: dict):
-            if len(keys) == 1:
-                settings[keys[0]] = value
-            else:
-                if keys[0] not in settings:
-                    settings[keys[0]] = {}
-                set_setting(keys[1:], value, settings[keys[0]])
-                  
+                kwargs['default'] = default
+
+            s = Prompt.ask(
+                f"{cls.INDENT*indent_level}[cyan bold]{configuration_parameter.keys[-1]}[/cyan bold]",
+                console=console,
+                **kwargs,
+                choices=configuration_parameter.choices,
+            )
+            try:
+                s = configuration_parameter.type(s)
+            except ValueError:
+                console.print(f"[red bold]Error[/bold]: You must enter a {str(configuration_parameter.type)} (invalid entry: '{s}').[/red]")
+        return s
+
+    def resolve(self):
+        console.print("Resolving configuration")           
         last_level: tuple[str, ...] = ()
         indent = 0
 
-        for configuration_parameter_wr in cls._ALL_CONFIGURATION_PARAMETERS:
+        for configuration_parameter_wr in ConfigurationParameter._ALL_CONFIGURATION_PARAMETERS:
             configuration_parameter: ConfigurationParameter | None =  configuration_parameter_wr()
             if configuration_parameter is None:
                 continue
@@ -167,38 +213,22 @@ class ConfigurationParameter:
                     min(len(current_level), len(last_level))
                 )
                 for i in range(start_level, len(current_level)):
-                    indent = i * 4
-                    console.print(f"{' '*indent}[cyan]{current_level[i]}[/cyan]:")
+                    self.print_scope(i, current_level[i])
                 
-            indent = len(current_level) * 4
+            indent = len(current_level)
 
-            if setting_exists(configuration_parameter.keys, settings):
-                s = get_setting(configuration_parameter.keys, settings)
+            if self.has(configuration_parameter.keys):
+                s = self.get(configuration_parameter.keys)
                 s = configuration_parameter.type(s)
-                console.print(f"{' '*indent}[cyan]{configuration_parameter.keys[-1]}[/cyan]: {s}")
+                self.print_setting(indent, configuration_parameter.keys[-1], s)
             else:
-                s = ""
-                while isinstance(s, str) and len(s) == 0:
-                    kwargs = {}
-                    default = configuration_parameter.value
-                    if default is UNRESOLVED:
-                        default = None
-                    else:
-                        kwargs['default'] = default
-
-                    s = Prompt.ask(
-                        f"{' '*indent}[cyan bold]{configuration_parameter.keys[-1]}[/cyan bold]",
-                        console=console,
-                        **kwargs,
-                        choices=configuration_parameter.choices,
-                    )
-                
-                s = configuration_parameter.type(s)
-                set_setting(configuration_parameter.keys, s, settings)
+                s = self.prompt_setting(indent, configuration_parameter)
+                self.set(configuration_parameter.keys, s)
             
             configuration_parameter.value = s
-        
-        return settings
+    
+    def dict(self) -> dict:
+        return self._config
 
             
 def configuration_parameter(*keys: str, default=INFER, type: type=str, choices: list[str]=None):
