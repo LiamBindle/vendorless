@@ -49,7 +49,7 @@ class ServiceTemplate:
             files.append((template_file, template_file))
         return files
     
-    def _render(self, stack_root: Path, docker_compose: dict):
+    def _render(self, docker_compose: dict):
         loader = ResourceLoader(self)
         env = jinja2.Environment(
             loader=loader
@@ -68,7 +68,7 @@ class ServiceTemplate:
                 raise ValueError(f"multiple input files render '{dst}'")
             dsts[dst] = src
             copies.add(dst)
-
+        stack_root = Path('.')
         for dst, src in dsts.items():
             dst = stack_root / env.from_string(dst).render(context)
             dst.parent.mkdir(parents=True, exist_ok=True)
@@ -96,13 +96,11 @@ class ServiceTemplate:
 
 
     @classmethod
-    def render_stack(cls, stack_root: str | Path):
-        if isinstance(stack_root, str):
-            stack_root = Path(stack_root)
+    def render_stack(cls):
         docker_compose = {}
         for service_template in _service_templates.values():
-            service_template._render(stack_root, docker_compose)
-        with open(stack_root/'docker-compose.yaml', 'w') as f:
+            service_template._render(docker_compose)
+        with open('docker-compose.yaml', 'w') as f:
             yaml.safe_dump(docker_compose, f)
 
 @dataclass
