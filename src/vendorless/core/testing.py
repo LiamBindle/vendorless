@@ -92,8 +92,9 @@ class Tester:
         yield
         self.run_cli([
             'core',
-            'start',
             'stop',
+            'test_stack',
+            '--destroy'
         ])
 
     

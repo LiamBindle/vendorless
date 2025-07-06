@@ -155,11 +155,15 @@ def start(stack: Path, live: bool):
 
 @cli.command()
 @click.argument('stack', type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path))
-def stop(stack: Path):
+@click.option('-d', '--destroy', is_flag=True, help='Delete the volumes')
+def stop(stack: Path, destroy):
     """
     Stop a stack.
     """
-    run_command('docker', 'compose', 'down', cwd=stack)
+    extra_args = []
+    if destroy:
+        extra_args.append('-v')
+    run_command('docker', 'compose', 'down', *extra_args, cwd=stack)
 
 @cli.command()
 @click.argument('stack', type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path))
